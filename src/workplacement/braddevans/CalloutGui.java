@@ -45,7 +45,7 @@ public class CalloutGui extends JFrame {
         dbpassword = dbpassword;
         dburl = dburl;
         dbname = dbname;
-        dbhostname= dbhostname;
+        dbhostname = dbhostname;
         dbport = dbport;
 
         // create a new panel with GridBagLayout manager
@@ -110,15 +110,16 @@ public class CalloutGui extends JFrame {
 
     public static void loadconfig() {
         Properties prop = new Properties();
-        OutputStream output = null;
         InputStream input = null;
 
         String userhome = getProperty("user.home");
 
         try {
-            input = new FileInputStream(userhome+"/config.properties");
+            input = new FileInputStream(userhome + "/config.properties");
+            prop.load(input);
+
             dbport = prop.getProperty("dbport");
-            dbusername = prop.getProperty("dbuser");
+            dbusername = prop.getProperty("dbusername");
             dbpassword = prop.getProperty("dbpassword");
             dbhostname = prop.getProperty("dbhostname");
             dbname = prop.getProperty("dbname");
@@ -131,21 +132,19 @@ public class CalloutGui extends JFrame {
             System.out.println(dbport);
             System.out.println(dbhostname);
 
-            prop.load(input);
-
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void createconfig(){
+    public static void createconfig() {
         Properties prop = new Properties();
         OutputStream output = null;
 
         String userhome = getProperty("user.home");
 
         try {
-            output = new FileOutputStream(userhome+"/config.properties");
+            output = new FileOutputStream(userhome + "/config.properties");
 
             // set the properties value
             prop.setProperty("dbusername", "braddevans");
@@ -153,20 +152,27 @@ public class CalloutGui extends JFrame {
             prop.setProperty("dbhostname", "localhost");
             prop.setProperty("dbport", "3066");
             prop.setProperty("dbname", "callout");
-            prop.setProperty("dburl","jdbc:mysql://localhost:3066/callouts");
+            prop.setProperty("dburl", "jdbc:mysql://localhost:3066/callouts");
 
             prop.store(output, null);
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             Path path = Paths.get(userhome + "/config.properties");
             Files.createDirectories(path.getParent());
-            if( !Files.exists(path)){
+            if (!Files.exists(path)) {
                 Files.createFile(path);
                 Files.write(path, ("").getBytes());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
 }

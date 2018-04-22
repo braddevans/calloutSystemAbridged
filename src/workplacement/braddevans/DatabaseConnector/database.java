@@ -9,8 +9,6 @@ import static workplacement.braddevans.CalloutGui.dbhostname;
 import static workplacement.braddevans.CalloutGui.dbport;
 import static workplacement.braddevans.CalloutGui.dbusername;
 import static workplacement.braddevans.CalloutGui.dbpassword;
-import static workplacement.braddevans.CalloutGui.dburl;
-
 
 public class database {
     private static final database instance = new database();
@@ -36,12 +34,15 @@ public class database {
 
     public void connectDB(){
         try{
-            String url = "jdbc:mysql://"+host+":"+port+"/"+dbname;
+            String url = "jdbc:mysql://localhost:3066/callout";
             String user = username;
             String pass = password;
             Connection conn = DriverManager.getConnection(url, user, password);
             System.out.println("Connected");
         }catch(Exception ex){
+            System.out.println(username);
+            System.out.println(password);
+            System.out.println(connection);
             ex.printStackTrace();
         }
     }
