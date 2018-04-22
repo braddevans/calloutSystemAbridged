@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/30010833/creating-a-properties-file-in-java-and-eclipse

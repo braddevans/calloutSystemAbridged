@@ -1,0 +1,112 @@
+this.database = Database.getInstance();
+        database.initDatabase();
+
+public Database getDB() {return database;}
+
+
+
+private Database database;
+
+
+
+//use prepared statements to stop sql injection
+
+
+
+
+package workplacement.bread.database;
+
+import javax.sql.DataSource;
+import java.sql.*;
+
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlDialectInspection"})
+public class Database {
+
+    private static final Database instance = new Database();
+    private DataSource datasource;
+    private Connection connection;
+
+    private static final String CONFIG_DATABASE_IP = "Database.IP";
+    private static final String CONFIG_DATABASE_PORT = "Database.Port";
+    private static final String CONFIG_DATABASE_USER_NAME = "Database.UserName";
+    private static final String CONFIG_DATABASE_PASSWORD = "Database.Password";
+    private static final String CONFIG_DATABASE_NAME = "Database.Name";
+    private static final String CONFIG_DATABASE_PREFIX = "Database.Prefix";
+    private static final String CONFIG_DATABASE_TYPE = "Database.Type";
+
+
+    private String host;
+    private String port;
+    private String username;
+    private String password;
+    private String prefix;
+    private String dbUrl;
+
+    public static Database getInstance() {
+        return Database.instance;
+    }
+
+    private Database() {
+        initDatabase();
+        setupConnection();
+        createTables();
+    }
+
+    private void setupConnection() {
+        try {
+            this.connection = DriverManager.getConnection(this.dbUrl, this.username, this.password);
+        } catch (SQLException e) {
+            system.out.println("Database Error");
+        }
+    }
+
+    public Connection openConnection() {
+        try {
+            if (this.connection.isClosed()) {
+                this.setupConnection();
+            }
+            return this.connection;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void createTables() {
+        //callouts
+        sql = "CREATE TABLE IF NOT EXISTS " + prefix + "rewards (" +
+                "message_id int(12) NOT NULL," +
+                "message varchar(255) NOT NULL," +
+                "UserId int(20) NOT NULL," +
+                "UserLocation varchar(255) DEFAULT 'Huddersfield University'," +
+                "date-created date NOT NULL" +
+                "PRIMARY KEY (message_id))";
+        createTableFromSql(sql);
+    }
+
+    private void createTableFromSql(String sql) {
+        String tableName = sql.substring(sql.indexOf("NOT EXISTS ") + 11, sql.indexOf(" ("));
+        system.out.println("Creating Table " + tableName + " if it doesn't exits Please Wait");
+        try (Statement statement = this.openConnection().createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+    }
+
+    private void createDatabase(String callout) {
+        system.out.println("Creating Database Please Wait");
+        try {
+            String dbUrl = "jdbc:mysql://" + this.host + ":" + this.port;
+            Connection conn = DriverManager.getConnection(dbUrl, this.username, this.password);
+            Statement statement = conn.createStatement();
+            statement.execute("CREATE DATABASE " + callout);
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+}
