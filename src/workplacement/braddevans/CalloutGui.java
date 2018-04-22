@@ -134,6 +134,14 @@ public class CalloutGui extends JFrame {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
