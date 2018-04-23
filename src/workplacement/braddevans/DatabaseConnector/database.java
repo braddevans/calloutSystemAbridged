@@ -27,7 +27,11 @@ public class database {
     private database() {
         initDatabase();
         setupConnection();
-        createTables();
+        try {
+            createTables();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void initDatabase() {
