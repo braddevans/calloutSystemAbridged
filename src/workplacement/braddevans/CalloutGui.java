@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -20,7 +22,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-
+import java.sql.*;
 import static java.lang.System.getProperty;
 
 public class CalloutGui extends JFrame {
@@ -30,8 +32,10 @@ public class CalloutGui extends JFrame {
     private JTextField textitsupport = new JTextField(20);
     private JTextField fieldlibrary = new JPasswordField(20);
     private JButton buttonSubmit = new JButton("submit");
-    private static database db;
 
+
+    //jdbc mysql stuff
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     public static String dbusername;
     public static String dbpassword;
     public static String dburl;
@@ -95,7 +99,7 @@ public class CalloutGui extends JFrame {
         loadconfig();
 
         //database
-        db.connectDB();
+        connectDB();
 
         // set look and feel to the system look and feel
 
@@ -106,6 +110,22 @@ public class CalloutGui extends JFrame {
             }
         });
 
+    }
+
+    public static void connectDB(){
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            String url = "jdbc:mysql://localhost:3066/callout";
+            String user = dbusername;
+            String pass = dbpassword;
+            Connection conn = DriverManager.getConnection(url, user, pass);
+            System.out.println("Connected");
+            System.out.println(dbusername);
+            System.out.println(dbpassword);
+            System.out.println(conn);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     public static void loadconfig() {
