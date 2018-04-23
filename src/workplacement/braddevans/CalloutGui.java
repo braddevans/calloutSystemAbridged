@@ -96,7 +96,6 @@ public class CalloutGui extends JFrame {
         //end of config
 
         //database
-        db = database.getInstance();
         database.initDatabase();
 
         // set look and feel to the system look and feel
@@ -107,7 +106,6 @@ public class CalloutGui extends JFrame {
                 new CalloutGui(dbusername, dbpassword, dburl, dbname, dbport, dbhostname).setVisible(true);
             }
         });
-
     }
 
     public database getDB() {
@@ -162,7 +160,7 @@ public class CalloutGui extends JFrame {
 
             // set the properties value
             prop.setProperty("dbusername", "braddevans");
-            prop.setProperty("dbpassword", "somepassword");
+            prop.setProperty("dbpassword", "abc123");
             prop.setProperty("dbhostname", "localhost");
             prop.setProperty("dbport", "3066");
             prop.setProperty("dbname", "callout");

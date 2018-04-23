@@ -7,9 +7,8 @@ import java.sql.*;
 import static workplacement.braddevans.CalloutGui.*;
 
 public class database {
-    private static final database instance = new database();
     private DataSource datasource;
-    private Connection connection;
+    private Connection conn;
 
     private static final String Database_ip = dbhostname;
     private static final String Database_port = dbport;
@@ -24,10 +23,6 @@ public class database {
     private static String password;
     private static String name;
     private static String url;
-
-    public static database getInstance() {
-        return database.instance;
-    }
 
     private database() {
         initDatabase();
@@ -63,53 +58,45 @@ public class database {
 
     private void setupConnection() {
         try {
-            this.connection = DriverManager.getConnection(this.url, this.username, this.password);
+            this.conn = DriverManager.getConnection(this.url, this.username, this.password);
         } catch (SQLException e) {
             System.out.println("Database Error");
         }
     }
 
-    private void createTables() {
+    private void createTables() throws SQLException {
         //create the table
-        String sql = "CREATE TABLE IF NOT EXISTS Messages (" +
-                "  `message_id` int(3) NOT NULL," +
-                "  `message` varchar(255) NOT NULL," +
-                "  `UserId` int(20) NOT NULL," +
-                "  `UserLocation` varchar(255) DEFAULT 'Huddersfield University'," +
-                "  `DateCreated` date NOT NULL" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=latin1;" +
-                "ALTER TABLE `Messages`" +
-                "  ADD PRIMARY KEY (`message_id`);";
-        createTableFromSql(sql);
+        String sql = "CREATE TABLE IF NOT EXISTS `callouts`.`Messages` ( " +
+                "`message_id` int(3) NOT NULL, " +
+                "`message` varchar(255) NOT NULL, " +
+                "`UserId` int(20) NOT NULL, " +
+                "`UserLocation` varchar(255) DEFAULT 'Huddersfield University', " +
+                "`DateCreated` date NOT NULL " +
+                ") ENGINE=InnoDB DEFAULT CHARSET=latin1; " +
+                "ALTER TABLE `Messages` " +
+                "ADD PRIMARY KEY (`message_id`);";
+        Statement stmt = conn.createStatement();
+        stmt.execute(sql);
+
+        System.out.println(sql);
     }
 
     public Connection openConnection() {
         try {
-            if (this.connection.isClosed()) {
+            if (this.conn.isClosed()) {
                 this.setupConnection();
             }
-            return this.connection;
+            return this.conn;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private void createTableFromSql(String sql) {
-        String tableName = sql.substring(sql.indexOf("NOT EXISTS ") + 11, sql.indexOf(" ("));
-        System.out.println("Creating Table " + tableName + " if it doesn't exits Please Wait");
-        try (Statement statement = this.openConnection().createStatement()) {
-            statement.execute(sql);
-        }
-        catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-    }
-
     private void createDatabase(String callouts) {
         System.out.println("Creating Database Please Wait");
         try {
-            String dbUrl = "jdbc:mysql://" + this.host + ":" + this.port;
+            String url = "jdbc:mysql://" + this.host + ":" + this.port;
             Connection conn = DriverManager.getConnection(this.url, this.username, this.password);
             Statement statement = conn.createStatement();
             statement.execute("CREATE DATABASE " + callouts);
