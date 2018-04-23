@@ -2,27 +2,14 @@ package workplacement.braddevans;
 
 import workplacement.braddevans.DatabaseConnector.database;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import java.sql.*;
 import static java.lang.System.getProperty;
 
 public class CalloutGui extends JFrame {
@@ -32,7 +19,7 @@ public class CalloutGui extends JFrame {
     private JTextField textitsupport = new JTextField(20);
     private JTextField fieldlibrary = new JPasswordField(20);
     private JButton buttonSubmit = new JButton("submit");
-
+    private static database db;
 
     //jdbc mysql stuff
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -92,14 +79,25 @@ public class CalloutGui extends JFrame {
     }
 
     public static void main(String[] args) {
-        //create config
-        createconfig();
+        //config
+        String userhome = getProperty("user.home");
+        Path path = Paths.get(userhome + "/config.properties");
 
-        //load config
-        loadconfig();
+        if (Files.exists(path)) {
+            loadconfig();
+            System.out.println("config exists");
+        }
+
+        if (Files.notExists(path)) {
+            createconfig();
+            System.out.println("Default config doesn't exist, Creating!!");
+        }
+
+        //end of config
 
         //database
-        connectDB();
+        db = database.getInstance();
+        database.initDatabase();
 
         // set look and feel to the system look and feel
 
@@ -112,20 +110,8 @@ public class CalloutGui extends JFrame {
 
     }
 
-    public static void connectDB(){
-        try{
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3066/callout";
-            String user = dbusername;
-            String pass = dbpassword;
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            System.out.println("Connected");
-            System.out.println(dbusername);
-            System.out.println(dbpassword);
-            System.out.println(conn);
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
+    public database getDB() {
+        return db;
     }
 
     public static void loadconfig() {
@@ -180,7 +166,7 @@ public class CalloutGui extends JFrame {
             prop.setProperty("dbhostname", "localhost");
             prop.setProperty("dbport", "3066");
             prop.setProperty("dbname", "callout");
-            prop.setProperty("dburl", "jdbc:mysql://localhost:3066/callouts");
+            prop.setProperty("dburl", "jdbc:mysql://0.0.0.0:3066/callouts");
 
             prop.store(output, null);
 
