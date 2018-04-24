@@ -130,11 +130,11 @@ public class CalloutGui extends JFrame {
 
             // set the properties value
             prop.setProperty("dbusername", "root");
-            prop.setProperty("dbpassword", "abc123");
+            prop.setProperty("dbpassword", "");
             prop.setProperty("dbhostname", "localhost");
             prop.setProperty("dbport", "3306");
-            prop.setProperty("dbname", "callout");
-            prop.setProperty("dburl", "jdbc:mysql://0.0.0.0:3306/callouts?user=root&password=abc123&useUnicode=true&characterEncoding=UTF-8");
+            prop.setProperty("dbname", "callouts");
+            prop.setProperty("dburl", "jdbc:mysql://0.0.0.0:3306/callouts?user=root&password=&useUnicode=true&characterEncoding=UTF-8");
 
             prop.store(output, null);
 

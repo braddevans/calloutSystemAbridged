@@ -52,32 +52,50 @@ public class database {
             e.printStackTrace();
         }
     }
+    public static Connection openConnection() {
+        try {
+            if (conn.isClosed()) {
+                setupConnection();
+            }
+            return conn;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     private static void createTables() throws SQLException {
         //create the table
-        String sql = "CREATE TABLE IF NOT EXISTS `callouts`.`Messages` ( " +
-                "`message_id` int(3) NOT NULL, " +
-                "`message` varchar(255) NOT NULL, " +
-                "`UserId` int(20) NOT NULL, " +
-                "`UserLocation` varchar(255) DEFAULT 'Huddersfield University', " +
-                "`DateCreated` date NOT NULL " +
-                ") ENGINE=InnoDB DEFAULT CHARSET=latin1; " +
-                "ALTER TABLE `Messages` " +
-                "ADD PRIMARY KEY (`message_id`);";
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql);
-
+        String sql = "CREATE TABLE IF NOT EXISTS `Messages` ( " +
+                "message_id int(3) NOT NULL, " +
+                "message varchar(255) NOT NULL, " +
+                "UserId int(20) NOT NULL, " +
+                "UserLocation varchar(255) DEFAULT 'Huddersfield University', " +
+                "DateCreated date NOT NULL " +
+                ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+        createTableFromSql(sql);
         System.out.println(sql);
     }
 
-    private static void createDatabase(String callouts) throws SQLException {
+    private static void createTableFromSql(String sql) {
+        String tableName = sql.substring(sql.indexOf("NOT EXISTS ") + 11, sql.indexOf(" ("));
+        System.out.println("Creating Table " + tableName + " if not exists Please Wait");
+        try (Statement statement = openConnection().createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+    }
+    private static void createDatabase(String name) throws SQLException {
         System.out.println("Creating Database Please Wait");
         try {
+            name = dbname;
             Class.forName("com.mysql.jdbc.Driver");
             String url = dburl;
             Connection conn = DriverManager.getConnection(url, username, password);
             Statement statement = conn.createStatement();
-            statement.execute("CREATE DATABASE IF NOT EXISTS " + callouts);
+            statement.execute("CREATE DATABASE IF NOT EXISTS " + name);
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } catch(Exception ex){
