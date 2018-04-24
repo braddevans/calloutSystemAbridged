@@ -129,7 +129,7 @@ public class CalloutGui extends JFrame {
             output = new FileOutputStream(userhome + "/config.properties");
 
             // set the properties value
-            prop.setProperty("dbusername", "braddevans");
+            prop.setProperty("dbusername", "root");
             prop.setProperty("dbpassword", "abc123");
             prop.setProperty("dbhostname", "localhost");
             prop.setProperty("dbport", "3306");
