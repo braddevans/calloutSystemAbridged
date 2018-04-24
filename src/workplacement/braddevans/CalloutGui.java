@@ -78,36 +78,6 @@ public class CalloutGui extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public static void main(String[] args) {
-        //config
-        String userhome = getProperty("user.home");
-        Path path = Paths.get(userhome + "/config.properties");
-
-        if (Files.exists(path)) {
-            loadconfig();
-            System.out.println("config exists");
-        }
-
-        if (Files.notExists(path)) {
-            createconfig();
-            System.out.println("Default config doesn't exist, Creating!!");
-        }
-
-        //end of config
-
-        //database
-        database.initDatabase();
-
-        // set look and feel to the system look and feel
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new CalloutGui(dbusername, dbpassword, dburl, dbname, dbport, dbhostname).setVisible(true);
-            }
-        });
-    }
-
     public database getDB() {
         return db;
     }
@@ -162,9 +132,9 @@ public class CalloutGui extends JFrame {
             prop.setProperty("dbusername", "braddevans");
             prop.setProperty("dbpassword", "abc123");
             prop.setProperty("dbhostname", "localhost");
-            prop.setProperty("dbport", "3066");
+            prop.setProperty("dbport", "3306");
             prop.setProperty("dbname", "callout");
-            prop.setProperty("dburl", "jdbc:mysql://0.0.0.0:3066/callouts");
+            prop.setProperty("dburl", "jdbc:mysql://0.0.0.0:3306/callouts?user=root&password=abc123&useUnicode=true&characterEncoding=UTF-8");
 
             prop.store(output, null);
 
@@ -186,5 +156,35 @@ public class CalloutGui extends JFrame {
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        //config
+        String userhome = getProperty("user.home");
+        Path path = Paths.get(userhome + "/config.properties");
+
+        if (Files.exists(path)) {
+            loadconfig();
+            System.out.println("config exists");
+        }
+
+        if (Files.notExists(path)) {
+            createconfig();
+            System.out.println("Default config doesn't exist, Creating!!");
+        }
+
+        //end of config
+
+        // set look and feel to the system look and feel
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new CalloutGui(dbusername, dbpassword, dburl, dbname, dbport, dbhostname).setVisible(true);
+            }
+        });
+
+        //database
+        db.database();
     }
 }

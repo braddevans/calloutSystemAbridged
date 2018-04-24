@@ -7,27 +7,25 @@ import java.sql.*;
 import static workplacement.braddevans.CalloutGui.*;
 
 public class database {
-    private DataSource datasource;
-    private Connection conn;
-
     private static final String Database_ip = dbhostname;
     private static final String Database_port = dbport;
     private static final String Database_username = dbusername;
     private static final String Database_password = dbpassword;
     private static final String Database_name = dbname;
-
-
     private static String host;
     private static String port;
     private static String username;
     private static String password;
     private static String name;
     private static String url;
+    private DataSource datasource;
+    private static Connection conn;
 
-    private database() {
+    public static void database() {
         initDatabase();
         setupConnection();
         try {
+            createDatabase(name);
             createTables();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,33 +40,20 @@ public class database {
         password = (String) Database_password;
         String name = (String) Database_name;
         dburl = "jdbc:mysql://" + host + ":" + port + "/" + name;
-        }
+        System.out.println("init database");
+    }
 
-    //public static void connectDB(){
-    //    try{
-    //        Class.forName("com.mysql.jdbc.Driver");
-    //        String url = dburl;
-    //        String user = dbusername;
-    //        String pass = dbpassword;
-    //        Connection conn = DriverManager.getConnection(url, user, pass);
-    //        System.out.println("Connected");
-    //        System.out.println(dbusername);
-    //        System.out.println(dbpassword);
-    //        System.out.println(conn);
-    //    }catch(Exception ex){
-    //        ex.printStackTrace();
-    //   }
-    //}
-
-    private void setupConnection() {
+    public static void setupConnection() {
         try {
-            this.conn = DriverManager.getConnection(this.url, this.username, this.password);
+            conn = DriverManager.getConnection(dburl, username, password);
+            System.out.println("Connected to: "+ dburl + " | " + dbusername + " | " + dbpassword + " | #" + dbport);
         } catch (SQLException e) {
-            System.out.println("Database Error");
+            System.out.println("Database Error Connecting to:"+ dburl + " | " + dbusername + " | " + dbpassword + " | #" + dbport);
+            e.printStackTrace();
         }
     }
 
-    private void createTables() throws SQLException {
+    private static void createTables() throws SQLException {
         //create the table
         String sql = "CREATE TABLE IF NOT EXISTS `callouts`.`Messages` ( " +
                 "`message_id` int(3) NOT NULL, " +
@@ -85,27 +70,18 @@ public class database {
         System.out.println(sql);
     }
 
-    public Connection openConnection() {
-        try {
-            if (this.conn.isClosed()) {
-                this.setupConnection();
-            }
-            return this.conn;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void createDatabase(String callouts) {
+    private static void createDatabase(String callouts) throws SQLException {
         System.out.println("Creating Database Please Wait");
         try {
-            String url = "jdbc:mysql://" + this.host + ":" + this.port;
-            Connection conn = DriverManager.getConnection(this.url, this.username, this.password);
+            Class.forName("com.mysql.jdbc.Driver");
+            String url = dburl;
+            Connection conn = DriverManager.getConnection(url, username, password);
             Statement statement = conn.createStatement();
-            statement.execute("CREATE DATABASE " + callouts);
+            statement.execute("CREATE DATABASE IF NOT EXISTS " + callouts);
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
+        } catch(Exception ex){
+            ex.printStackTrace();
         }
     }
 }
